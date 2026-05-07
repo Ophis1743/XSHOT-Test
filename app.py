@@ -7,7 +7,7 @@ app = Flask(__name__)
 # ==================== CONFIG ====================
 VERIFY_TOKEN = "Tokisaki"
 DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/1321797789079961630/sg6geaquzxtWxUjky9vv072iB9Kd_jhDppFS-Di1glDqvqDbpD7uawGNI9gfWmk0nTA2"
-FB_ACCESS_TOKEN = "EAAxpQGKiCoMBRZA77bWHjjh74ZASOO1DdJuSEfwhZALeZBMaJOwZCjnPceUZCNgwTsFvS9pEDcQCIcOCiZCO2dOyiTq20dRo967hL7NUxLzeTtPqx968gkX1zzz8JKDfay3gGeZCyLmyrP7TxTfAD6ZCQZCAxWEvtJLX7wp0Wxlk6AAskAZCxdDLHZCxM7YU7D1h8EZA2pIMXUa1v7ANJqBmiuJAnu6q2lQZDZD"   # ใช้ดึงชื่อคน
+FB_ACCESS_TOKEN = "EAAxpQGKiCoMBReNVasqvNvp4C88QvPNzAkRxw5OxSiiRIFZCCQ0b3rNYNytWn7NYYSUWag0GDvDirebnLo1u9mStXipsTrh1ZC29BazyiM76S914VbbOV3ZCkJlMTZARZCfG5JbwGxQBoGNlVV46HHwXqQTnUVq1RbKqJK9gzrPvBXWhCdSdqXT2bzTHIPrb7VW5gzLjOuTHWJxxDD1wvWVBEFZAUnVcr6rYiqWDomecN5INeQQNT2yqQZD"   # ใช้ดึงชื่อคน
 THAI_TZ = timezone(timedelta(hours=7))
 # ================================================
 
