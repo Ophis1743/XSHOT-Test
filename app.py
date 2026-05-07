@@ -7,8 +7,7 @@ app = Flask(__name__)
 # ==================== CONFIG ====================
 VERIFY_TOKEN = "trueice1743"
 DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/1321797789079961630/sg6geaquzxtWxUjky9vv072iB9Kd_jhDppFS-Di1glDqvqDbpD7uawGNI9gfWmk0nTA2"
-FB_ACCESS_TOKEN = "	
-1615491719732541|DSq6FKJnlVhPDHyKozND_ARH0Mc"   # ใช้ดึงชื่อคน
+FB_ACCESS_TOKEN = "1615491719732541|DSq6FKJnlVhPDHyKozND_ARH0Mc"# ใช้ดึงชื่อคน
 THAI_TZ = timezone(timedelta(hours=7))
 # ================================================
 
