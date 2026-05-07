@@ -7,7 +7,7 @@ app = Flask(__name__)
 # ==================== CONFIG ====================
 VERIFY_TOKEN = "trueice1743"
 DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/1321797789079961630/sg6geaquzxtWxUjky9vv072iB9Kd_jhDppFS-Di1glDqvqDbpD7uawGNI9gfWmk0nTA2"
-FB_ACCESS_TOKEN = "1615491719732541|DSq6FKJnlVhPDHyKozND_ARH0Mc"
+FB_ACCESS_TOKEN = "EAAW9RZCoXnT0BRcKIURQSKmO1MafPrZARTaGz0E9OYRguZBCNZBvDIrs606kDaXbuhyL1iIzQQeALxJerwQ65SQkSobZAKvR9Bh7ynElGYAJHn7Xg0EA5NgyI2lhfu47pYq5GmnTLK6EcBZC3IKvFI5Cu09dSntdZCZBsGDGSIZAYMY20Nya6qs2yNFWljxm199P7xXUMZBgZBVSs4k0YveN0z5HP98rDZA0sZCji1a7AIeQCD4lgwZCTd4rBEMgZDZD"
 THAI_TZ = timezone(timedelta(hours=7))
 # ================================================
 
