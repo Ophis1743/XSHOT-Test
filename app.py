@@ -7,13 +7,12 @@ app = Flask(__name__)
 # ==================== CONFIG ====================
 VERIFY_TOKEN = "Tokisaki"
 DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/1321797789079961630/sg6geaquzxtWxUjky9vv072iB9Kd_jhDppFS-Di1glDqvqDbpD7uawGNI9gfWmk0nTA2"
-FB_ACCESS_TOKEN = "EAAxpQGKiCoMBReNVasqvNvp4C88QvPNzAkRxw5OxSiiRIFZCCQ0b3rNYNytWn7NYYSUWag0GDvDirebnLo1u9mStXipsTrh1ZC29BazyiM76S914VbbOV3ZCkJlMTZARZCfG5JbwGxQBoGNlVV46HHwXqQTnUVq1RbKqJK9gzrPvBXWhCdSdqXT2bzTHIPrb7VW5gzLjOuTHWJxxDD1wvWVBEFZAUnVcr6rYiqWDomecN5INeQQNT2yqQZD"   # ใช้ดึงชื่อคน
+FB_ACCESS_TOKEN = "EAAxpQGKiCoMBRZA77bWHjjh74ZASOO1DdJuSEfwhZALeZBMaJOwZCjnPceUZCNgwTsFvS9pEDcQCIcOCiZCO2dOyiTq20dRo967hL7NUxLzeTtPqx968gkX1zzz8JKDfay3gGeZCyLmyrP7TxTfAD6ZCQZCAxWEvtJLX7wp0Wxlk6AAskAZCxdDLHZCxM7YU7D1h8EZA2pIMXUa1v7ANJqBmiuJAnu6q2lQZDZD"
 THAI_TZ = timezone(timedelta(hours=7))
 # ================================================
 
 
 def get_user_name(sender_id):
-    """ดึงชื่อจริงจาก Facebook"""
     url = f"https://graph.facebook.com/{sender_id}"
     params = {
         "fields": "first_name,last_name",
@@ -21,24 +20,24 @@ def get_user_name(sender_id):
     }
     try:
         res = requests.get(url, params=params).json()
+        print("User data:", res)
         return f"{res.get('first_name', '')} {res.get('last_name', '')}".strip()
-    except:
+    except Exception as e:
+        print("Error getting user:", e)
         return f"Unknown ({sender_id})"
 
 
 def get_thai_time():
-    """เวลาปัจจุบันแบบไทย"""
     now = datetime.now(THAI_TZ)
     return now.strftime("%d/%m/%Y %H:%M:%S")
 
 
 def send_to_discord(embed: dict):
-    """ส่ง embed message ไป Discord"""
     payload = {"embeds": [embed]}
-    requests.post(DISCORD_WEBHOOK_URL, json=payload)
+    res = requests.post(DISCORD_WEBHOOK_URL, json=payload)
+    print("Discord response:", res.status_code, res.text)
 
 
-# ✅ Verify Webhook
 @app.route('/webhook', methods=['GET'])
 def verify():
     token = request.args.get('hub.verify_token')
@@ -48,22 +47,19 @@ def verify():
     return 'Invalid token', 403
 
 
-# 📩 รับ Events จาก Facebook
 @app.route('/webhook', methods=['POST'])
 def receive_event():
     data = request.json
+    print("=== Received data ===")
+    print(data)
     object_type = data.get('object')
+    print("Object type:", object_type)
 
-    # --- Messages (คนทักมาใน Page) ---
     if object_type == 'page':
         for entry in data.get('entry', []):
-
-            # 💬 Private Message
             for event in entry.get('messaging', []):
                 if 'message' in event:
                     handle_message(event)
-
-            # 🗨️ Comment ในโพสต์
             for change in entry.get('changes', []):
                 if change.get('field') == 'feed':
                     val = change.get('value', {})
@@ -74,14 +70,12 @@ def receive_event():
 
 
 def handle_message(event):
-    """จัดการ Private Message"""
     sender_id = event['sender']['id']
     message_text = event.get('message', {}).get('text', '(ไม่มีข้อความ/เป็นสติกเกอร์หรือรูป)')
     attachments = event.get('message', {}).get('attachments', [])
     name = get_user_name(sender_id)
     time_str = get_thai_time()
 
-    # ตรวจสอบ attachment
     extra = ""
     if attachments:
         types = [a.get('type', 'unknown') for a in attachments]
@@ -89,7 +83,7 @@ def handle_message(event):
 
     embed = {
         "title": "📩 มีคนทักมาใน Facebook Page!",
-        "color": 0x1877F2,  # สีฟ้า Facebook
+        "color": 0x1877F2,
         "fields": [
             {"name": "👤 ชื่อ", "value": name, "inline": True},
             {"name": "🆔 Sender ID", "value": f"`{sender_id}`", "inline": True},
@@ -102,7 +96,6 @@ def handle_message(event):
 
 
 def handle_comment(val):
-    """จัดการ Comment ในโพสต์"""
     sender_id = val.get('sender_id', 'unknown')
     sender_name = val.get('sender_name', get_user_name(sender_id))
     comment_text = val.get('message', '(ไม่มีข้อความ)')
@@ -111,7 +104,7 @@ def handle_comment(val):
 
     embed = {
         "title": "🗨️ มีคนคอมเมนต์ในโพสต์!",
-        "color": 0x42B72A,  # สีเขียว
+        "color": 0x42B72A,
         "fields": [
             {"name": "👤 ชื่อ", "value": sender_name, "inline": True},
             {"name": "🆔 Sender ID", "value": f"`{sender_id}`", "inline": True},
@@ -126,10 +119,3 @@ def handle_comment(val):
 
 if __name__ == '__main__':
     app.run(port=5000, debug=True)
-@app.route('/webhook', methods=['POST'])
-def receive_event():
-    data = request.json
-    print("Received data:", data)  # เพิ่มบรรทัดนี้
-    object_type = data.get('object')
-    print("Object type:", object_type)  # เพิ่มบรรทัดนี้
-    ...
