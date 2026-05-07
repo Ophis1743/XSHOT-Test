@@ -126,3 +126,10 @@ def handle_comment(val):
 
 if __name__ == '__main__':
     app.run(port=5000, debug=True)
+@app.route('/webhook', methods=['POST'])
+def receive_event():
+    data = request.json
+    print("Received data:", data)  # เพิ่มบรรทัดนี้
+    object_type = data.get('object')
+    print("Object type:", object_type)  # เพิ่มบรรทัดนี้
+    ...
