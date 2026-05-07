@@ -7,13 +7,12 @@ app = Flask(__name__)
 # ==================== CONFIG ====================
 VERIFY_TOKEN = "trueice1743"
 DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/1321797789079961630/sg6geaquzxtWxUjky9vv072iB9Kd_jhDppFS-Di1glDqvqDbpD7uawGNI9gfWmk0nTA2"
-FB_ACCESS_TOKEN = "1615491719732541|DSq6FKJnlVhPDHyKozND_ARH0Mc"# ใช้ดึงชื่อคน
+FB_ACCESS_TOKEN = "1615491719732541|DSq6FKJnlVhPDHyKozND_ARH0Mc"
 THAI_TZ = timezone(timedelta(hours=7))
 # ================================================
 
 
 def get_user_name(sender_id):
-    """ดึงชื่อจริงจาก Facebook"""
     url = f"https://graph.facebook.com/{sender_id}"
     params = {
         "fields": "first_name,last_name",
@@ -27,18 +26,15 @@ def get_user_name(sender_id):
 
 
 def get_thai_time():
-    """เวลาปัจจุบันแบบไทย"""
     now = datetime.now(THAI_TZ)
     return now.strftime("%d/%m/%Y %H:%M:%S")
 
 
 def send_to_discord(embed: dict):
-    """ส่ง embed message ไป Discord"""
     payload = {"embeds": [embed]}
     requests.post(DISCORD_WEBHOOK_URL, json=payload)
 
 
-# ✅ Verify Webhook
 @app.route('/webhook', methods=['GET'])
 def verify():
     token = request.args.get('hub.verify_token')
@@ -48,22 +44,16 @@ def verify():
     return 'Invalid token', 403
 
 
-# 📩 รับ Events จาก Facebook
 @app.route('/webhook', methods=['POST'])
 def receive_event():
     data = request.json
     object_type = data.get('object')
 
-    # --- Messages (คนทักมาใน Page) ---
     if object_type == 'page':
         for entry in data.get('entry', []):
-
-            # 💬 Private Message
             for event in entry.get('messaging', []):
                 if 'message' in event:
                     handle_message(event)
-
-            # 🗨️ Comment ในโพสต์
             for change in entry.get('changes', []):
                 if change.get('field') == 'feed':
                     val = change.get('value', {})
@@ -74,14 +64,12 @@ def receive_event():
 
 
 def handle_message(event):
-    """จัดการ Private Message"""
     sender_id = event['sender']['id']
     message_text = event.get('message', {}).get('text', '(ไม่มีข้อความ/เป็นสติกเกอร์หรือรูป)')
     attachments = event.get('message', {}).get('attachments', [])
     name = get_user_name(sender_id)
     time_str = get_thai_time()
 
-    # ตรวจสอบ attachment
     extra = ""
     if attachments:
         types = [a.get('type', 'unknown') for a in attachments]
@@ -89,7 +77,7 @@ def handle_message(event):
 
     embed = {
         "title": "📩 มีคนทักมาใน Facebook Page!",
-        "color": 0x1877F2,  # สีฟ้า Facebook
+        "color": 0x1877F2,
         "fields": [
             {"name": "👤 ชื่อ", "value": name, "inline": True},
             {"name": "🆔 Sender ID", "value": f"`{sender_id}`", "inline": True},
@@ -102,7 +90,6 @@ def handle_message(event):
 
 
 def handle_comment(val):
-    """จัดการ Comment ในโพสต์"""
     sender_id = val.get('sender_id', 'unknown')
     sender_name = val.get('sender_name', get_user_name(sender_id))
     comment_text = val.get('message', '(ไม่มีข้อความ)')
@@ -111,7 +98,7 @@ def handle_comment(val):
 
     embed = {
         "title": "🗨️ มีคนคอมเมนต์ในโพสต์!",
-        "color": 0x42B72A,  # สีเขียว
+        "color": 0x42B72A,
         "fields": [
             {"name": "👤 ชื่อ", "value": sender_name, "inline": True},
             {"name": "🆔 Sender ID", "value": f"`{sender_id}`", "inline": True},
